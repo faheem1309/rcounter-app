@@ -1,0 +1,40 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+  background-color: #121212;
+  color: white;
+}
+
+.dark .card {
+  background-color: #1e1e1e;
+}
+
+.buttons button {
+  margin: 5px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggle {
+  margin-top: 15px;
+}
