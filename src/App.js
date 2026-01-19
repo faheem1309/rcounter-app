@@ -1,85 +1,49 @@
 import React, { useEffect, useState } from "react";
 import CounterButton from "./components/CounterButton";
+import Tooltip from "./components/Tooltip";
+import Toast from "./components/Toast";
+import useCounter from "./hooks/useCounter";
 import "./App.css";
 
-const MAX = 100;
-
 function App() {
-  const [count, setCount] = useState(() => {
-    const saved = localStorage.getItem("count");
-    return saved ? Number(saved) : 0;
-  });
+const { count, increment, decrement, reset, undo } = useCounter();
+const [toast, setToast] = useState("");
+useEffect(() => {
+if (count === 100) setToast("Maximum limit reached");
+else setToast("");
+}, [count]);
 
-  const [darkMode, setDarkMode] = useState(false);
+useEffect(() => {
+const keyHandler = (e) => {
+if (e.key === "ArrowUp") increment(1);
+if (e.key === "ArrowDown") decrement(1);
+if (e.key === "r") reset();
+};
 
-  useEffect(() => {
-    localStorage.setItem("count", count);
-  }, [count]);
+window.addEventListener("keydown", keyHandler);
+return () => window.removeEventListener("keydown", keyHandler);
+}, [increment, decrement, reset]);
+return (
+<div className="app">
+<div className="card">
+<h1>Advanced Counter</h1>
+<h2 aria-live="polite">{count}</h2>
+<div className="buttons">
+<Tooltip text="Increase by 1">
+<CounterButton text="+1" onClick={() => increment(1)} />
+</Tooltip>
 
-  useEffect(() => {
-    const handleKey = (e) => {
-      if (e.key === "ArrowUp") increment(1);
-      if (e.key === "ArrowDown") decrement(1);
-      if (e.key === "r") reset();
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  });
+<CounterButton text="+5" onClick={() => increment(5)} />
+<CounterButton text="-1" onClick={() => decrement(1)}
+disabled={count === 0} />
+<CounterButton text="Undo" onClick={undo} />
+<CounterButton text="Reset" onClick={reset} />
+</div>
 
-  const increment = (value) => {
-    setCount((prev) => Math.min(prev + value, MAX));
-  };
-
-  const decrement = (value) => {
-    setCount((prev) => Math.max(prev - value, 0));
-  };
-
-  const reset = () => setCount(0);
-
-  return (
-    <div className={`app ${darkMode ? "dark" : ""}`}>
-      <div className="card">
-        <h1>React Counter</h1>
-        <h2>{count}</h2>
-
-        <div className="buttons">
-          <CounterButton
-            text="+1"
-            onClick={() => increment(1)}
-            disabled={count >= MAX}
-          />
-          <CounterButton
-            text="+5"
-            onClick={() => increment(5)}
-            disabled={count >= MAX}
-          />
-          <CounterButton
-            text="-1"
-            onClick={() => decrement(1)}
-            disabled={count === 0}
-          />
-          <CounterButton
-            text="Reset"
-            onClick={reset}
-          />
-        </div>
-
-        <div className="toggle">
-          <label>
-            <input
-              type="checkbox"
-              onChange={() => setDarkMode(!darkMode)}
-            />{" "}
-            Dark Mode
-          </label>
-        </div>
-
-        <p style={{ fontSize: "12px", marginTop: "10px" }}>
-          ⬆ Increment | ⬇ Decrement | R Reset
-        </p>
-      </div>
-    </div>
-  );
+<Toast message={toast} />
+<p style={{ fontSize: "12px" }}>↑ ↓ R supported</p>
+</div>
+</div>
+);
 }
-
 export default App;
